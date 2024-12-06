@@ -39,30 +39,48 @@
           <div v-if="message" class="alert alert-info mt-2">{{ message }}</div>
         </div>
       </div>
+      <div v-if="change.length > 0" class="mt-4">
+        <h3>Vuelto</h3>
+        <ul class="list-group">
+          <li v-for="(coin, index) in change" :key="index" class="list-group-item">
+            {{ coin.quantity }} monedas de {{ coin.denomination }} colones
+          </li>
+        </ul>
+      </div>
     </div>
   </template>
   
   <script>
   import axios from 'axios';
+  import { BackendAPIAddress } from './main.js';
   
   export default {
     data() {
       return {
-        coffees: [
-          { name: 'Americano', price: 950, quantity: 10 },
-          { name: 'Capuchino', price: 1200, quantity: 8 },
-          { name: 'Latte', price: 1350, quantity: 10 },
-          { name: 'Mocachino', price: 1500, quantity: 15 }
-        ],
+        coffees: [],
         selectedCoffee: 0,
         quantity: 1,
         total: 0,
         money: 0,
         error: '',
-        message: ''
+        message: '',
+        selectedCoffees: [],
+        change: []
       };
     },
+    created() {
+      this.fetchCoffees();
+    },
     methods: {
+      fetchCoffees() {
+        axios.get(`${BackendAPIAddress}/Coffee`)
+          .then(response => {
+            this.coffees = response.data;
+          })
+          .catch(() => {
+            this.error = 'Error al obtener el inventario de cafés';
+          });
+      },
       addCoffee() {
         const coffee = this.coffees[this.selectedCoffee];
         if (this.quantity > coffee.quantity) {
@@ -71,19 +89,23 @@
         }
         this.total += coffee.price * this.quantity;
         coffee.quantity -= this.quantity;
+        this.selectedCoffees.push({ name: coffee.name, quantity: this.quantity });
         this.error = '';
       },
       makePurchase() {
-        axios.post('/api/compra', {
+        axios.post(`${BackendAPIAddress}/Purchase`, {
           total: this.total,
-          money: this.money
+          money: this.money,
+          coffees: this.selectedCoffees
         })
         .then(response => {
           this.message = response.data.message;
           this.total = 0;
           this.money = 0;
+          this.selectedCoffees = [];
+          this.change = response.data.change;
         })
-        .catch(error => {
+        .catch(() => {
           this.message = 'Fallo al realizar la compra';
         });
       },
