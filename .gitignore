@@ -15,3 +15,5 @@ back_end/.editorconfig
 /Tests/obj/Debug/net8.0/Tests.AssemblyInfoInputs.cache
 Tests/obj/Debug/net8.0/Tests.AssemblyInfo.cs
 Tests/obj/Debug/net8.0/Tests.AssemblyInfoInputs.cache
+CoffeeTests/bin
+CoffeeTests/obj
