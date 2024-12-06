@@ -1,3 +1,7 @@
+using backend_examen2.Application;
+using backend_examen2.Application.Interfaces;
+using backend_examen2.Repositories;
+
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +23,11 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<ICoffeeRepository, CoffeeRepository>();
+builder.Services.AddScoped<ICoinRepository, CoinRepository>();
+builder.Services.AddScoped<CoffeeQuery>();
+builder.Services.AddScoped<PurchaseCommand>();
 
 var app = builder.Build();
 
