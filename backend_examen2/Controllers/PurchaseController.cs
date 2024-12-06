@@ -25,7 +25,22 @@ namespace backend_examen2.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                if (ex.Message.Contains("Dinero insuficiente para realizar la compra"))
+                {
+                    return BadRequest(new { message = ex.Message });
+                }
+                else if (ex.Message.Contains("Cantidad insuficiente de café"))
+                {
+                    return StatusCode(StatusCodes.Status409Conflict, new { message = ex.Message });
+                }
+                else if (ex.Message.Contains("No se puede proporcionar el vuelto exacto con las monedas disponibles"))
+                {
+                    return StatusCode(StatusCodes.Status422UnprocessableEntity, new { message = ex.Message });
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Error interno del servidor" });
+                }
             }
         }
     }

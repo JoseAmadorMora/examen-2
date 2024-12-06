@@ -105,8 +105,24 @@
           this.selectedCoffees = [];
           this.change = response.data.change;
         })
-        .catch(() => {
-          this.message = 'Fallo al realizar la compra';
+        .catch(error => {
+          if (error.response) {
+            switch (error.response.status) {
+              case 400:
+                this.message = error.response.data.message;
+                break;
+              case 409:
+                this.message = error.response.data.message;
+                break;
+              case 422:
+                this.message = error.response.data.message;
+                break;
+              default:
+                this.message = 'Error interno del servidor';
+            }
+          } else {
+            this.message = 'Fallo al realizar la compra';
+          }
         });
       },
       isNumber(event) {
